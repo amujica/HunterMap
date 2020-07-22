@@ -16,6 +16,7 @@ import numpy as np
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css','https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css']
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server
 
 #Colors displayed
 
@@ -27,8 +28,8 @@ colors_pie = ["#60BD68","#F15854","#5DA5DA","#FAA43A","#DECF3F", "#F17CB0", "#B2
 def read_file(csv_path):
     return pd.read_csv(csv_path, sep=";", decimal=",")
 
-hunted= read_file("https://raw.githubusercontent.com/amujica/HuntingMap/master/hunted.csv")
-missed= read_file("https://raw.githubusercontent.com/amujica/HuntingMap/master/missed.csv")
+hunted= read_file("https://raw.githubusercontent.com/amujica/HunterMap/master/hunted.csv")
+missed= read_file("https://raw.githubusercontent.com/amujica/HunterMap/master/missed.csv")
 
 
 #Graphs without selectors
@@ -83,20 +84,32 @@ Designed by [Alberto Mujica](https://amujica.github.io/)
 
 #Some calculations for the controls
 
+def delete_nan(list_of_dicts):
+    for index, items in enumerate(list_of_dicts):
+        for key, value in items.items():
+                if value == "nan":
+                    del list_of_dicts[index]
+                    break
+
 hunter_options = [
     {"label": str(hunter), "value": str(hunter)}
-    for hunter in hunted["Hunter"].unique()
+    for hunter in hunted["Hunter"].unique() 
 ]
+
 
 for hunter in missed["Hunter"].unique():
     if hunter not in hunted["Hunter"].unique():
         hunter_options.append({"label": str(hunter), "value": str(hunter)})
+
+
 
 cb_hunter_options = list(hunted["Hunter"].unique())
 
 for hunter in missed["Hunter"].unique():
     if hunter not in cb_hunter_options:
         cb_hunter_options.append(hunter)
+
+delete_nan(hunter_options)
 
 
 season_options = [
@@ -107,6 +120,8 @@ season_options = [
 for season in missed["Season"].unique():
     if season not in hunted["Season"].unique():
         season_options.append({"label": str(season), "value": str(season)})
+
+delete_nan(season_options)
 
 cb_season_options = list(hunted["Season"].unique())
 
@@ -121,6 +136,7 @@ appr_options = [
 
 cb_appr_options = list(hunted["Approach"].unique())
 
+delete_nan(appr_options)
 
 
 #Layout
@@ -962,6 +978,9 @@ def filter_dataframe_missed(df, dropdown_hunters,dropdown_seasons):
     ]
     return dff
 def filter_dataframe_result(df, slider_points, dropdown_hunters,dropdown_approaches,dropdown_seasons, checklist_hm):
+
+    if len(checklist_hm) == 0:
+        return df
     
     if (len(checklist_hm) < 2):
         df = df[df["Type"]==checklist_hm[0]]        
