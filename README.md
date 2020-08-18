@@ -1,11 +1,7 @@
 # HunterMap
 Anlysis of a dataset of hunted deers in an area of Washington with pandas and matplotlib as well as a Web App developed with Dash that allows the user to interact with the mentioned dataset. 
 
-![Demo1](images/demo/demo1.png)
-
-![Demo2](images/demo/demo2.jpg)
-
-![Demo3](images/demo/demo3.png)
+<p align="center"><img src="images/demo/demo-gif.gif" alt="demo" /></p>
 
 ## Install
 
